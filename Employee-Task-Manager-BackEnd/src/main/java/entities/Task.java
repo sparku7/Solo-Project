@@ -3,6 +3,7 @@ package entities;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "task")
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
