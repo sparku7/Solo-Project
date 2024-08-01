@@ -1,9 +1,11 @@
 package com.lbg.Employee.Task.Manager.BackEnd.services;
 
+import com.lbg.Employee.Task.Manager.BackEnd.entities.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.lbg.Employee.Task.Manager.BackEnd.repos.TaskRepo;
 import com.lbg.Employee.Task.Manager.BackEnd.entities.Task;
+import com.lbg.Employee.Task.Manager.BackEnd.repos.EmployeeRepo;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +15,8 @@ public class TaskService {
 
     @Autowired
     private TaskRepo taskRepo;
+    @Autowired
+    private EmployeeRepo employeeRepo;
 
     // Create new task
     public Task createTask(Task task) {
@@ -42,5 +46,15 @@ public class TaskService {
     public void deleteTask(Long id) {
         Task task = taskRepo.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
         taskRepo.delete(task);
+    }
+
+    public Task assignTask(Long taskId, Long employeeId) {
+        Task task = taskRepo.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+        Employee employee = employeeRepo.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        task.setAssignedEmployee(employee);
+        return taskRepo.save(task);
     }
 }

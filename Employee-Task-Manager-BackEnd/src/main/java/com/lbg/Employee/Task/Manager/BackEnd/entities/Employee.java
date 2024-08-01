@@ -1,5 +1,6 @@
 package com.lbg.Employee.Task.Manager.BackEnd.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ public class Employee {
     private String position;
 
     @OneToMany(mappedBy = "assignedEmployee", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Task> tasks = new ArrayList<>();
 
     public Employee() {

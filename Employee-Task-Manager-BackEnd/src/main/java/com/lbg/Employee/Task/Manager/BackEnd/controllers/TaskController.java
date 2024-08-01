@@ -41,6 +41,13 @@ public class TaskController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();    }
+
+    @PatchMapping("/{taskId}/assign")
+    public ResponseEntity<Task> assignTask(
+            @PathVariable Long taskId,
+            @RequestParam Long employeeId) {
+        Task updatedTask = taskService.assignTask(taskId, employeeId);
+        return ResponseEntity.ok(updatedTask);
     }
 }
