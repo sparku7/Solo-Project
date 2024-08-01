@@ -14,8 +14,7 @@ public class Employee {
     private String name;
     private String position;
 
-    @OneToMany(mappedBy = "assignedEmployee", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "assignedEmployee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();
 
     public Employee() {

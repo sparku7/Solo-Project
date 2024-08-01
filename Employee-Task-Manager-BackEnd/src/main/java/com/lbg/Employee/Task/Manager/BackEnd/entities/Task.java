@@ -10,7 +10,7 @@ public class Task {
     private String name;
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_employee_id")
     private Employee assignedEmployee;
 

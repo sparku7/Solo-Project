@@ -1,9 +1,27 @@
 package dtos;
 
+import java.util.List;
+
 public class EmployeeDTO {
     private Long id;
     private String name;
     private String position;
+    private List<TaskDTO> tasks;
+
+    public EmployeeDTO() {}
+
+    public EmployeeDTO(Long id, String name, String position, List<TaskDTO> tasks) {
+        this.id = id;
+        this.name = name;
+        this.position = position;
+        this.tasks = tasks;
+    }
+
+    public EmployeeDTO(Long id, String name, String position) {
+        this.id = id;
+        this.name = name;
+        this.position = position;
+    }
 
     public Long getId() {
         return id;
@@ -29,11 +47,11 @@ public class EmployeeDTO {
         this.position = position;
     }
 
-    public EmployeeDTO(Long id, String name, String position) {
-        this.id = id;
-        this.name = name;
-        this.position = position;
+    public List<TaskDTO> getTasks() {
+        return tasks;
+    }
 
-
+    public void setTasks(List<TaskDTO> tasks) {
+        this.tasks = tasks;
     }
 }
