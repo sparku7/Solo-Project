@@ -1,10 +1,10 @@
-package controllers;
+package com.lbg.Employee.Task.Manager.BackEnd.controllers;
 
-import entities.Employee;
+import com.lbg.Employee.Task.Manager.BackEnd.entities.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import services.EmployeeService;
+import com.lbg.Employee.Task.Manager.BackEnd.services.EmployeeService;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class EmployeeController {
         return ResponseEntity.ok().body(employee);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
         Employee updatedEmployee = employeeService.updateEmployee(id, employeeDetails);
         return ResponseEntity.ok(updatedEmployee);

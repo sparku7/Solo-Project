@@ -1,13 +1,11 @@
-package entities;
+package com.lbg.Employee.Task.Manager.BackEnd.entities;
 
 import jakarta.persistence.*;
-import org.springframework.scheduling.config.Task;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "employee")
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +15,9 @@ public class Employee {
 
     @OneToMany(mappedBy = "assignedEmployee", cascade = CascadeType.ALL)
     private List<Task> tasks = new ArrayList<>();
+
+    public Employee() {
+    }
 
     public Employee(Long id, String name, String position, List<Task> tasks) {
         this.id = id;

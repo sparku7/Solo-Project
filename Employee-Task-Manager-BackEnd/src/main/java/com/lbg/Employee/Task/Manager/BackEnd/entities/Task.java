@@ -1,9 +1,8 @@
-package entities;
+package com.lbg.Employee.Task.Manager.BackEnd.entities;
 
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "task")
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +13,9 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "assigned_employee_id")
     private Employee assignedEmployee;
+
+    public Task() {
+    }
 
     public Task(Long id, String name, String description, Employee assignedEmployee) {
         this.id = id;

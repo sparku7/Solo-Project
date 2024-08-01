@@ -1,9 +1,9 @@
-package services;
+package com.lbg.Employee.Task.Manager.BackEnd.services;
 
-import entities.Employee;
+import com.lbg.Employee.Task.Manager.BackEnd.entities.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import repos.EmployeeRepo;
+import com.lbg.Employee.Task.Manager.BackEnd.repos.EmployeeRepo;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,11 +1,11 @@
-package controllers;
+package com.lbg.Employee.Task.Manager.BackEnd.controllers;
 
-import entities.Task;
+import com.lbg.Employee.Task.Manager.BackEnd.entities.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import services.TaskService;
+import com.lbg.Employee.Task.Manager.BackEnd.services.TaskService;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class TaskController {
         return ResponseEntity.ok().body(task);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task taskDetails) {
         Task updatedTask = taskService.updateTask(id, taskDetails);
         return ResponseEntity.ok(updatedTask);
