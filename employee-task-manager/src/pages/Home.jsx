@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import EmployeeCard from '../components/EmployeeCard';
+import EmployeeForm from '../components/AddEmployee'; // Import the EmployeeForm component
 import styled from 'styled-components';
 import axios from 'axios';
-import EmployeeForm from '../components/AddEmployee';
 
 const Home = () => {
     const [employees, setEmployees] = useState([]);
@@ -12,7 +12,6 @@ const Home = () => {
         fetchEmployees();
     }, []);
 
-    // Fetch employees from the server
     const fetchEmployees = async () => {
         try {
             const response = await axios.get('http://localhost:8081/api/employees');
@@ -23,20 +22,25 @@ const Home = () => {
     };
 
     // Handle employee deletion
-    const handleDelete = (id) => {
+    const handleEmployeeDelete = (id) => {
         setEmployees(prevEmployees => prevEmployees.filter(employee => employee.id !== id));
+    };
+
+    // Handle new employee addition
+    const handleEmployeeAdded = () => {
+        fetchEmployees();
     };
 
     return (
         <Container>
             <h1>Employees</h1>
-            <EmployeeForm onEmployeeAdded={fetchEmployees} />
+            <EmployeeForm onEmployeeAdded={handleEmployeeAdded} />
             <EmployeeGrid>
                 {employees.map(employee => (
                     <EmployeeCard
                         key={employee.id}
                         employee={employee}
-                        onDelete={handleDelete}
+                        onDelete={handleEmployeeDelete}
                     />
                 ))}
             </EmployeeGrid>
