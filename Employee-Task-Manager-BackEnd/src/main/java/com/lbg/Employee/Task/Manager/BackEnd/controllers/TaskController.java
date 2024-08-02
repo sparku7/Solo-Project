@@ -41,7 +41,7 @@ public class TaskController {
         return ResponseEntity.ok(new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getAssignedEmployee() != null ? task.getAssignedEmployee().getId() : null));
     }
 
-       @GetMapping("/employee/{employeeId}")
+       @GetMapping("/employee/{employeeId}/tasks")
     public List<TaskDTO> getTasksByEmployeeId(@PathVariable Long employeeId) {
         List<Task> tasks = taskService.getTasksByEmployeeId(employeeId);
         return tasks.stream()

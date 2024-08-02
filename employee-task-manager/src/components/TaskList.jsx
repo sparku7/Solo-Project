@@ -1,82 +1,75 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import TaskCard from '../components/TaskCard'; // Ensure this is correctly imported
-import TaskForm from '../components/TaskForm'; // Ensure this is correctly imported
+import TaskCard from '../components/TaskCard';
+import TaskForm from '../components/TaskForm';
 import styled from 'styled-components';
+import { useParams } from 'react-router-dom';
 
 const TaskListPage = () => {
     const [tasks, setTasks] = useState([]);
     const [employees, setEmployees] = useState([]);
+    const { employeeId } = useParams(); // Get employeeId from URL
 
     useEffect(() => {
         fetchTasks();
         fetchEmployees();
     }, []);
 
-    // Fetch tasks from the server
+    useEffect(() => {
+        // Fetch tasks again if employeeId changes
+        if (employeeId) {
+            fetchTasks();
+        }
+    }, [employeeId]);
+
     const fetchTasks = async () => {
         try {
             const response = await axios.get('http://localhost:8081/api/tasks');
-            setTasks(response.data || []);
+            setTasks(response.data);
         } catch (error) {
             console.error('Error fetching tasks:', error);
         }
     };
 
-    // Fetch employees from the server
     const fetchEmployees = async () => {
         try {
             const response = await axios.get('http://localhost:8081/api/employees');
-            setEmployees(response.data || []);
+            setEmployees(response.data);
         } catch (error) {
             console.error('Error fetching employees:', error);
         }
     };
 
-    // Handle adding a new task
     const handleTaskAdded = (newTask) => {
         setTasks(prevTasks => [...prevTasks, newTask]);
     };
 
-    // Handle assigning a task to an employee
-    const handleTaskAssign = async (updatedTask) => {
-        try {
-            // Update the task assignment on the server
-            const response = await axios.patch(
-                `http://localhost:8081/api/tasks/${updatedTask.id}/assign`,
-                null, // Assuming the server expects `null` or an empty body
-                { params: { employeeId: updatedTask.assignedEmployeeId } }
-            );
-
-            // Update the task list state with the updated task
-            setTasks(prevTasks =>
-                prevTasks.map(task =>
-                    task.id === updatedTask.id
-                        ? { ...task, assignedEmployee: response.data.assignedEmployee }
-                        : task
-                )
-            );
-        } catch (error) {
-            console.error('Error assigning task:', error);
-        }
+    const handleTaskDelete = (id) => {
+        setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
     };
 
-    // Handle deleting a task
-    const handleTaskDelete = async (taskId) => {
-        try {
-            await axios.delete(`http://localhost:8081/api/tasks/${taskId}`);
-            setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
-        } catch (error) {
-            console.error('Error deleting task:', error);
-        }
+    const handleTaskAssign = (updatedTask) => {
+        console.log('Updating task:', updatedTask); // Log updated task
+        setTasks(prevTasks =>
+            prevTasks.map(task =>
+                task.id === updatedTask.id ? { ...task, assignedEmployeeId: updatedTask.assignedEmployeeId } : task
+            )
+        );
     };
+    
+    
+
+    const filteredTasks = employeeId 
+    ? tasks.filter(task => task.assignedEmployeeId === parseInt(employeeId, 10)) 
+    : tasks;
+
 
     return (
         <Container>
             <h1>Tasks</h1>
             <TaskForm onTaskAdded={handleTaskAdded} />
             <TaskGrid>
-                {tasks.map(task => (
+                {filteredTasks.map(task => (
                     <TaskCard
                         key={task.id}
                         task={task}

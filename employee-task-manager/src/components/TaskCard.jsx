@@ -2,13 +2,20 @@ import React from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 
-const TaskCard = ({ task, onDelete, onAssign, employees }) => {
+const TaskCard = React.memo(({ task, employees, onDelete, onAssign }) => {
+    console.log('TaskCard props:', { task, employees });
+
     if (!task || !task.id) {
         return <div>Error: Task data is missing.</div>;
     }
 
+    if (employees.length === 0) {
+        console.warn('No employees available');
+    }
+
     const handleDelete = async () => {
         try {
+            console.log(`Deleting task with ID: ${task.id}`);
             await axios.delete(`http://localhost:8081/api/tasks/${task.id}`);
             onDelete(task.id);
         } catch (error) {
@@ -20,13 +27,15 @@ const TaskCard = ({ task, onDelete, onAssign, employees }) => {
         const employeeId = e.target.value;
         if (!employeeId) return; // Skip if no employee selected
 
+        console.log(`Assigning task ID ${task.id} to employee ID ${employeeId}`);
+
         try {
             const response = await axios.patch(
                 `http://localhost:8081/api/tasks/${task.id}/assign`,
                 null,
                 { params: { employeeId } }
             );
-
+            console.log('Task assigned response:', response.data);
             onAssign(response.data);
         } catch (error) {
             console.error('Error assigning task:', error);
@@ -44,14 +53,19 @@ const TaskCard = ({ task, onDelete, onAssign, employees }) => {
             <button onClick={handleDelete}>Delete</button>
             <select onChange={handleAssign} value={task.assignedEmployeeId || ""}>
                 <option value="">Assign to...</option>
-                {employees.map(emp => (
-                    <option key={emp.id} value={emp.id}>{emp.name}</option>
-                ))}
+                {employees.length > 0 ? (
+                    employees.map(emp => (
+                        <option key={emp.id} value={emp.id}>{emp.name}</option>
+                    ))
+                ) : (
+                    <option value="">No employees available</option>
+                )}
             </select>
         </Card>
     );
-};
+});
 
+// Styled components
 const Card = styled.div`
     background: #444;
     color: white;

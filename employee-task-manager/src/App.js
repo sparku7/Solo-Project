@@ -8,18 +8,15 @@ import EmployeeTasks from './pages/EmployeeTasks';
 function App() {
   return (
     <div className="App">
-    <BrowserRouter>
-      <NavBar />
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path="/employee/:id" element={<EmployeeTasks />} />
-        <Route path='/tasks' element={<TaskListPage />} />
-       
+      <BrowserRouter>
+        <NavBar />
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path="/employee/:id/tasks" element={<EmployeeTasks />} />
+          <Route path='/tasks' element={<TaskListPage />} />
         </Routes>
-    </BrowserRouter>
-    
-
-  </div>
+      </BrowserRouter>
+    </div>
   );
 }
 

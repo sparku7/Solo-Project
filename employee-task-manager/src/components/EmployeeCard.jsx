@@ -21,7 +21,7 @@ const EmployeeCard = ({ employee, onDelete }) => {
         <Card>
             <h3>{employee.name}</h3>
             <p>{employee.position}</p>
-            <Link to={`/employee/${employee.id}`}>View Tasks</Link>
+            <Link to={`/employee/${employee.id}/tasks`}>View Tasks</Link>
             <DeleteButton onClick={handleDelete}>Delete</DeleteButton>
         </Card>
     );
