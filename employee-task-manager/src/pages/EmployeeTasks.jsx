@@ -11,23 +11,23 @@ const EmployeeTasks = () => {
     const [error, setError] = useState(null);
     const [employees, setEmployees] = useState([]);
 
-    useEffect(() => {
-        const fetchTasksAndEmployees = async () => {
-            try {
-                const [tasksResponse, employeesResponse] = await Promise.all([
-                    axios.get(`http://localhost:8081/api/tasks/employee/${id}/tasks`),
-                    axios.get(`http://localhost:8081/api/employees`)
-                ]);
-                setTasks(tasksResponse.data);
-                setEmployees(employeesResponse.data);
-            } catch (err) {
-                console.error('Error fetching tasks and employees:', err); // Log error
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchTasksAndEmployees = async () => {
+        try {
+            const [tasksResponse, employeesResponse] = await Promise.all([
+                axios.get(`http://localhost:8081/api/tasks/employee/${id}/tasks`),
+                axios.get(`http://localhost:8081/api/employees`)
+            ]);
+            setTasks(tasksResponse.data);
+            setEmployees(employeesResponse.data);
+        } catch (err) {
+            console.error('Error fetching tasks and employees:', err); // Log error
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchTasksAndEmployees();
     }, [id]);
 
@@ -35,8 +35,8 @@ const EmployeeTasks = () => {
         setTasks(tasks.filter(task => task.id !== taskId));
     };
 
-    const handleAssign = (updatedTask) => {
-        setTasks(tasks.map(task => (task.id === updatedTask.id ? updatedTask : task)));
+    const handleAssign = async (updatedTask) => {
+        await fetchTasksAndEmployees();
     };
 
     if (loading) return <p>Loading tasks...</p>;
@@ -57,7 +57,7 @@ const EmployeeTasks = () => {
                         />
                     ))
                 ) : (
-                    <p>No tasks found.</p>
+                    <NoTasksMessage>No tasks found.</NoTasksMessage>
                 )}
             </TaskList>
         </div>
@@ -69,6 +69,18 @@ const TaskList = styled.div`
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+`;
+
+const NoTasksMessage = styled.p`
+    color: #ff4d4f;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+    padding: 20px;
+    background: #f0f0f0;
+    border-radius: 8px;
+    margin: 10px 0;
 `;
 
 export default EmployeeTasks;
