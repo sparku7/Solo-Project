@@ -7,10 +7,12 @@ import EmployeeForm from '../components/AddEmployee';
 const Home = () => {
     const [employees, setEmployees] = useState([]);
 
+    // Fetch employees when the component mounts
     useEffect(() => {
         fetchEmployees();
     }, []);
 
+    // Fetch employees from the server
     const fetchEmployees = async () => {
         try {
             const response = await axios.get('http://localhost:8081/api/employees');
@@ -20,19 +22,15 @@ const Home = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        try {
-            await axios.delete(`http://localhost:8081/api/employees/${id}`);
-            setEmployees(employees.filter(employee => employee.id !== id));
-        } catch (error) {
-            console.error('Error deleting employee:', error.response ? error.response.data : error.message);
-        }
+    // Handle employee deletion
+    const handleDelete = (id) => {
+        setEmployees(prevEmployees => prevEmployees.filter(employee => employee.id !== id));
     };
 
     return (
         <Container>
             <h1>Employees</h1>
-            <EmployeeForm refreshEmployees={fetchEmployees} />
+            <EmployeeForm onEmployeeAdded={fetchEmployees} />
             <EmployeeGrid>
                 {employees.map(employee => (
                     <EmployeeCard

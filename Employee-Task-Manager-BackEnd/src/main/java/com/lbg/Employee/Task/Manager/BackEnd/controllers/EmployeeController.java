@@ -3,10 +3,13 @@ package com.lbg.Employee.Task.Manager.BackEnd.controllers;
 import com.lbg.Employee.Task.Manager.BackEnd.entities.Employee;
 import dtos.EmployeeDTO;
 import dtos.TaskDTO;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.lbg.Employee.Task.Manager.BackEnd.services.EmployeeService;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,7 +77,11 @@ public class EmployeeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
-        employeeService.deleteEmployee(id);
-        return ResponseEntity.noContent().build();
+        try {
+            employeeService.deleteEmployee(id);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found", ex);
+        }
     }
 }

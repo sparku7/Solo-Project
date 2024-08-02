@@ -9,7 +9,11 @@ const EmployeeCard = ({ employee, onDelete }) => {
             await axios.delete(`http://localhost:8081/api/employees/${employee.id}`);
             onDelete(employee.id);
         } catch (error) {
-            console.error('Error deleting employee:', error.response ? error.response.data : error.message);
+            if (error.response && error.response.status === 404) {
+                console.error('Employee not found:', error.response.data);
+            } else {
+                console.error('Error deleting employee:', error.response ? error.response.data : error.message);
+            }
         }
     };
 

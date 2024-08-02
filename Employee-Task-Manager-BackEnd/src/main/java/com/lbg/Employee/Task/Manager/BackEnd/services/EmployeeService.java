@@ -1,6 +1,7 @@
 package com.lbg.Employee.Task.Manager.BackEnd.services;
 
 import com.lbg.Employee.Task.Manager.BackEnd.entities.Employee;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.lbg.Employee.Task.Manager.BackEnd.repos.EmployeeRepo;
@@ -37,9 +38,11 @@ public class EmployeeService {
         return employeeRepo.save(employee);
     }
 
-    // Delete employee
     public void deleteEmployee(Long id) {
-        Employee employee = employeeRepo.findById(id).orElseThrow(() -> new RuntimeException("Employee not found"));
-        employeeRepo.delete(employee);
+        if (!employeeRepo.existsById(id)) {
+            throw new EntityNotFoundException("Employee not found");
+        }
+        employeeRepo.deleteById(id);
     }
+
 }
