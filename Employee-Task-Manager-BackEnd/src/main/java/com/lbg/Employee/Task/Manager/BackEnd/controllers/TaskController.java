@@ -41,6 +41,15 @@ public class TaskController {
         return ResponseEntity.ok(new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getAssignedEmployee() != null ? task.getAssignedEmployee().getId() : null));
     }
 
+       @GetMapping("/employee/{employeeId}")
+    public List<TaskDTO> getTasksByEmployeeId(@PathVariable Long employeeId) {
+        List<Task> tasks = taskService.getTasksByEmployeeId(employeeId);
+        return tasks.stream()
+                .map(task -> new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getAssignedEmployee() != null ? task.getAssignedEmployee().getId() : null))
+                .collect(Collectors.toList());
+    }
+
+
     @PatchMapping("/{id}")
     public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO) {
         Task updatedTask = taskService.updateTask(id, new Task(taskDTO.getId(), taskDTO.getName(), taskDTO.getDescription(), null));

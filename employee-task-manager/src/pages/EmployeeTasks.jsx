@@ -9,8 +9,8 @@ const EmployeeTasks = () => {
     const [tasks, setTasks] = useState([]);
 
     useEffect(() => {
-        axios.get(`/api/employees/${id}/tasks`)
-            .then(response => setTasks(response.data.tasks))
+        axios.get(`http://localhost:8081/api/tasks/employee/${id}`)
+            .then(response => setTasks(response.data))
             .catch(error => console.error('Error fetching tasks:', error));
     }, [id]);
 

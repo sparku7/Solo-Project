@@ -33,6 +33,10 @@ public class TaskService {
         return taskRepo.findById(id);
     }
 
+    public List<Task> getTasksByEmployeeId(Long employeeId) {
+        return taskRepo.findByAssignedEmployeeId(employeeId);
+    }
+
     // Update task details
     public Task updateTask(Long id, Task taskDetails) {
         Task task = taskRepo.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));

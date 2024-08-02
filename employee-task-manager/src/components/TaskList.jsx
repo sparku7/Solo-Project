@@ -1,30 +1,26 @@
 import React from 'react';
-import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
-const TaskList = ({ tasks }) => {
+const TaskList = ({ tasks = [] }) => {
     return (
-        <TaskContainer>
-            {tasks.map(task => (
-                <TaskCard key={task.id}>
-                    <h4>{task.name}</h4>
-                    <p>{task.description}</p>
-                </TaskCard>
-            ))}
-        </TaskContainer>
+        <div>
+            {tasks.length > 0 ? (
+                tasks.map(task => (
+                    <div key={task.id}>
+                        <h3>{task.name}</h3>
+                        <p>{task.description}</p>
+                        <p>{task.assignedEmployee}</p>
+                    </div>
+                ))
+            ) : (
+                <p>No tasks available</p>
+            )}
+        </div>
     );
 };
 
-const TaskContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-`;
-
-const TaskCard = styled.div`
-    background: #555;
-    color: white;
-    padding: 15px;
-    border-radius: 8px;
-`;
+TaskList.propTypes = {
+    tasks: PropTypes.array
+};
 
 export default TaskList;

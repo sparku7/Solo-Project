@@ -17,7 +17,7 @@ const EmployeeForm = () => {
                 position,
             });
             console.log('Employee created:', response.data);
-            // Optionally, redirect or reset the form
+           
         } catch (err) {
             setError('Failed to create employee.');
             console.error('Error creating employee:', err);

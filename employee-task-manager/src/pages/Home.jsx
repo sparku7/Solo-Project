@@ -8,18 +8,38 @@ const Home = () => {
     const [employees, setEmployees] = useState([]);
 
     useEffect(() => {
-        axios.get('/api/employees')
-            .then(response => setEmployees(response.data))
-            .catch(error => console.error('Error fetching employees:', error));
+        fetchEmployees();
     }, []);
+
+    const fetchEmployees = async () => {
+        try {
+            const response = await axios.get('http://localhost:8081/api/employees');
+            setEmployees(response.data);
+        } catch (error) {
+            console.error('Error fetching employees:', error);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`http://localhost:8081/api/employees/${id}`);
+            setEmployees(employees.filter(employee => employee.id !== id));
+        } catch (error) {
+            console.error('Error deleting employee:', error.response ? error.response.data : error.message);
+        }
+    };
 
     return (
         <Container>
             <h1>Employees</h1>
-            <EmployeeForm />
+            <EmployeeForm refreshEmployees={fetchEmployees} />
             <EmployeeGrid>
                 {employees.map(employee => (
-                    <EmployeeCard key={employee.id} employee={employee} />
+                    <EmployeeCard
+                        key={employee.id}
+                        employee={employee}
+                        onDelete={handleDelete}
+                    />
                 ))}
             </EmployeeGrid>
         </Container>
