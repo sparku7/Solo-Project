@@ -24,6 +24,7 @@ const TaskCard = React.memo(({ task, employees, onDelete, onAssign }) => {
     };
 
     const handleAssign = async (e) => {
+        e.preventDefault(); // Prevent default browser behavior if necessary
         const employeeId = e.target.value;
         if (!employeeId) return; // Skip if no employee selected
 

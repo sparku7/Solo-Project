@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import TaskCard from '../components/TaskCard';
-import styled from 'styled-components';
+import styled from 'styled-components'; // Ensure correct import for styled-components
 
 const EmployeeTasks = () => {
     const { id } = useParams(); // Extract employee ID from URL
@@ -11,32 +11,41 @@ const EmployeeTasks = () => {
     const [error, setError] = useState(null);
     const [employees, setEmployees] = useState([]);
 
-    const fetchTasksAndEmployees = async () => {
+    const fetchTasksAndEmployees = useCallback(async () => {
+        setLoading(true);
         try {
             const [tasksResponse, employeesResponse] = await Promise.all([
                 axios.get(`http://localhost:8081/api/tasks/employee/${id}/tasks`),
                 axios.get(`http://localhost:8081/api/employees`)
             ]);
+            console.log('Tasks Response:', tasksResponse.data); // Debugging
+            console.log('Employees Response:', employeesResponse.data); // Debugging
             setTasks(tasksResponse.data);
             setEmployees(employeesResponse.data);
         } catch (err) {
-            console.error('Error fetching tasks and employees:', err); // Log error
-            setError(err.message);
+            console.error('Error fetching tasks and employees:', err);
+            setError(err.message || 'An unexpected error occurred.');
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
 
     useEffect(() => {
         fetchTasksAndEmployees();
-    }, [id]);
+    }, [fetchTasksAndEmployees]);
 
     const handleDelete = (taskId) => {
         setTasks(tasks.filter(task => task.id !== taskId));
     };
 
     const handleAssign = async (updatedTask) => {
-        await fetchTasksAndEmployees();
+        try {
+            await axios.patch(`http://localhost:8081/api/tasks/${updatedTask.id}`, updatedTask);
+            fetchTasksAndEmployees(); // Refetch tasks after assignment
+        } catch (err) {
+            console.error('Error updating task:', err);
+            setError('Failed to update task.');
+        }
     };
 
     if (loading) return <p>Loading tasks...</p>;
