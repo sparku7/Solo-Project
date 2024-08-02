@@ -9,13 +9,15 @@ const TaskForm = ({ onTaskAdded }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            await axios.post('http://localhost:8081/api/tasks', {
+            const response = await axios.post('http://localhost:8081/api/tasks', {
                 name: taskName,
                 description: taskDescription,
             });
+            
+            const newTask = response.data;
             setTaskName('');
             setTaskDescription('');
-            onTaskAdded(); // Notify parent to refresh task list
+            onTaskAdded(newTask); // Pass the new task to the parent component
         } catch (error) {
             console.error('Error adding task:', error);
         }
@@ -45,12 +47,14 @@ const Form = styled.form`
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
+    
     input, textarea {
         margin-bottom: 10px;
         padding: 10px;
         border-radius: 4px;
         border: 1px solid #ccc;
     }
+    
     button {
         background: #1e90ff;
         color: white;

@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import TaskCard from '../components/TaskCard'; // Ensure this is correctly imported
+import TaskForm from '../components/TaskForm'; // Ensure this is correctly imported
 import styled from 'styled-components';
-import TaskCard from '../components/TaskCard';
-import TaskForm from '../components/TaskForm'; // Assuming TaskForm is the component to add a new task
 
-const TaskList = () => {
+const TaskListPage = () => {
     const [tasks, setTasks] = useState([]);
     const [employees, setEmployees] = useState([]);
 
-    // Fetch tasks and employees when the component mounts
     useEffect(() => {
         fetchTasks();
         fetchEmployees();
@@ -18,7 +17,7 @@ const TaskList = () => {
     const fetchTasks = async () => {
         try {
             const response = await axios.get('http://localhost:8081/api/tasks');
-            setTasks(response.data);
+            setTasks(response.data || []);
         } catch (error) {
             console.error('Error fetching tasks:', error);
         }
@@ -28,41 +27,62 @@ const TaskList = () => {
     const fetchEmployees = async () => {
         try {
             const response = await axios.get('http://localhost:8081/api/employees');
-            setEmployees(response.data);
+            setEmployees(response.data || []);
         } catch (error) {
             console.error('Error fetching employees:', error);
         }
     };
 
-    // Handle task deletion
-    const handleDelete = (id) => {
-        setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
-    };
-
-    // Handle task assignment
-    const handleAssign = (taskId, employeeId) => {
-        setTasks(prevTasks => prevTasks.map(task => 
-            task.id === taskId ? { ...task, assignedEmployee: employees.find(emp => emp.id === employeeId) } : task
-        ));
-    };
-
     // Handle adding a new task
-    const handleAddTask = () => {
-        fetchTasks(); // Refresh the list of tasks
+    const handleTaskAdded = (newTask) => {
+        setTasks(prevTasks => [...prevTasks, newTask]);
+    };
+
+    // Handle assigning a task to an employee
+    const handleTaskAssign = async (updatedTask) => {
+        try {
+            // Update the task assignment on the server
+            const response = await axios.patch(
+                `http://localhost:8081/api/tasks/${updatedTask.id}/assign`,
+                null, // Assuming the server expects `null` or an empty body
+                { params: { employeeId: updatedTask.assignedEmployeeId } }
+            );
+
+            // Update the task list state with the updated task
+            setTasks(prevTasks =>
+                prevTasks.map(task =>
+                    task.id === updatedTask.id
+                        ? { ...task, assignedEmployee: response.data.assignedEmployee }
+                        : task
+                )
+            );
+        } catch (error) {
+            console.error('Error assigning task:', error);
+        }
+    };
+
+    // Handle deleting a task
+    const handleTaskDelete = async (taskId) => {
+        try {
+            await axios.delete(`http://localhost:8081/api/tasks/${taskId}`);
+            setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+        } catch (error) {
+            console.error('Error deleting task:', error);
+        }
     };
 
     return (
         <Container>
             <h1>Tasks</h1>
-            <TaskForm onTaskAdded={handleAddTask} />
+            <TaskForm onTaskAdded={handleTaskAdded} />
             <TaskGrid>
                 {tasks.map(task => (
                     <TaskCard
                         key={task.id}
                         task={task}
-                        onDelete={handleDelete}
-                        onAssign={handleAssign}
-                        employees={employees} // Pass employees for assignment
+                        employees={employees}
+                        onDelete={handleTaskDelete}
+                        onAssign={handleTaskAssign}
                     />
                 ))}
             </TaskGrid>
@@ -81,4 +101,4 @@ const TaskGrid = styled.div`
     gap: 20px;
 `;
 
-export default TaskList;
+export default TaskListPage;

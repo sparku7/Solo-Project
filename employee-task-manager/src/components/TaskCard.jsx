@@ -3,7 +3,10 @@ import styled from 'styled-components';
 import axios from 'axios';
 
 const TaskCard = ({ task, onDelete, onAssign, employees }) => {
-    // Handle task deletion
+    if (!task || !task.id) {
+        return <div>Error: Task data is missing.</div>;
+    }
+
     const handleDelete = async () => {
         try {
             await axios.delete(`http://localhost:8081/api/tasks/${task.id}`);
@@ -13,29 +16,30 @@ const TaskCard = ({ task, onDelete, onAssign, employees }) => {
         }
     };
 
-    // Handle task assignment
     const handleAssign = async (e) => {
+        const employeeId = e.target.value;
+        if (!employeeId) return; // Skip if no employee selected
+
         try {
-            const employeeId = e.target.value;
-            const response = await axios.patch(`http://localhost:8081/api/tasks/${task.id}/assign`, null, {
-                params: { employeeId }
-            });
-            
-            // Update the task assignment locally
+            const response = await axios.patch(
+                `http://localhost:8081/api/tasks/${task.id}/assign`,
+                null,
+                { params: { employeeId } }
+            );
+
             onAssign(response.data);
         } catch (error) {
             console.error('Error assigning task:', error);
         }
     };
 
-    // Find assigned employee or default to 'None'
     const assignedEmployee = employees.find(emp => emp.id === task.assignedEmployeeId);
     const assignedEmployeeName = assignedEmployee ? assignedEmployee.name : 'None';
 
     return (
         <Card>
-            <h3>{task.name}</h3>
-            <p>{task.description}</p>
+            <h3>{task.name || 'No Name'}</h3>
+            <p>{task.description || 'No Description'}</p>
             <p>Assigned to: {assignedEmployeeName}</p>
             <button onClick={handleDelete}>Delete</button>
             <select onChange={handleAssign} value={task.assignedEmployeeId || ""}>

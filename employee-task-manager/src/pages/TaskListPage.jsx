@@ -16,7 +16,7 @@ const TaskListPage = () => {
     const fetchTasks = async () => {
         try {
             const response = await axios.get('http://localhost:8081/api/tasks');
-            setTasks(response.data);
+            setTasks(response.data || []); // Ensure tasks is always an array
         } catch (error) {
             console.error('Error fetching tasks:', error);
         }
@@ -25,26 +25,47 @@ const TaskListPage = () => {
     const fetchEmployees = async () => {
         try {
             const response = await axios.get('http://localhost:8081/api/employees');
-            setEmployees(response.data);
+            setEmployees(response.data || []); // Ensure employees is always an array
         } catch (error) {
             console.error('Error fetching employees:', error);
         }
     };
 
-    const handleTaskAdded = (newTask) => {
-        setTasks(prevTasks => [...prevTasks, newTask]);
+    const handleTaskAdded = async (newTask) => {
+        if (!newTask) {
+            console.error('Invalid task:', newTask);
+            return;
+        }
+
+        try {
+            // Optionally, you can make a request to fetch the updated task list
+            // Or just add the new task directly to the state
+            setTasks(prevTasks => [...prevTasks, newTask]);
+        } catch (error) {
+            console.error('Error adding task:', error);
+        }
     };
 
     const handleTaskDelete = (id) => {
-        setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+        if (id) {
+            setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+        } else {
+            console.error('Invalid task id for deletion:', id);
+        }
     };
 
     const handleTaskAssign = (updatedTask) => {
-        setTasks(prevTasks =>
-            prevTasks.map(task =>
-                task.id === updatedTask.id ? { ...task, assignedEmployeeId: updatedTask.assignedEmployeeId } : task
-            )
-        );
+        if (updatedTask && updatedTask.id) {
+            setTasks(prevTasks =>
+                prevTasks.map(task =>
+                    task.id === updatedTask.id
+                        ? { ...task, assignedEmployeeId: updatedTask.assignedEmployeeId }
+                        : task
+                )
+            );
+        } else {
+            console.error('Invalid updated task:', updatedTask);
+        }
     };
 
     return (
@@ -52,15 +73,23 @@ const TaskListPage = () => {
             <h1>Tasks</h1>
             <TaskForm onTaskAdded={handleTaskAdded} />
             <TaskGrid>
-                {tasks.map(task => (
-                    <TaskCard
-                        key={task.id}
-                        task={task}
-                        employees={employees}
-                        onDelete={handleTaskDelete}
-                        onAssign={handleTaskAssign}
-                    />
-                ))}
+                {tasks && tasks.length > 0 ? (
+                    tasks.map(task => (
+                        task && task.id ? (
+                            <TaskCard
+                                key={task.id}
+                                task={task}
+                                employees={employees}
+                                onDelete={handleTaskDelete}
+                                onAssign={handleTaskAssign}
+                            />
+                        ) : (
+                            <p key="error">Error: Task data is missing.</p>
+                        )
+                    ))
+                ) : (
+                    <p>No tasks available</p>
+                )}
             </TaskGrid>
         </Container>
     );
