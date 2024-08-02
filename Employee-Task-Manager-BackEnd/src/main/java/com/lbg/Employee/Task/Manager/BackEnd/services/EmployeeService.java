@@ -44,5 +44,8 @@ public class EmployeeService {
         }
         employeeRepo.deleteById(id);
     }
+    public List<Employee> searchByName(String query) {
+        return employeeRepo.findByNameStartingWithIgnoreCase(query);
+    }
 
 }

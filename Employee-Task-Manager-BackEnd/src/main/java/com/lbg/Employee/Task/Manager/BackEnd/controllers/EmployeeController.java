@@ -84,4 +84,16 @@ public class EmployeeController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found", ex);
         }
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<EmployeeDTO>> searchEmployees(@RequestParam String query) {
+        List<Employee> employees = employeeService.searchByName(query);
+        List<EmployeeDTO> employeesDTO = employees.stream()
+                .map(e -> new EmployeeDTO(e.getId(), e.getName(), e.getPosition(),
+                        e.getTasks().stream()
+                                .map(t -> new TaskDTO(t.getId(), t.getName(), t.getDescription(), t.getAssignedEmployee() != null ? t.getAssignedEmployee().getId() : null))
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(employeesDTO);
+    }
 }

@@ -1,21 +1,37 @@
 import React, { useState } from 'react';
 import { Container, Navbar } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 function NavBar() {
   const [expanded, setExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    navigate(`/search?query=${searchQuery}`);
+  };
 
   return (
     <>
       <StyledNavbar expand="lg" expanded={expanded}>
         <Container>
           <StyledBrand as={Link} to="/">To Don't List</StyledBrand>
-            <Navbar.Collapse id="basic-navbar-nav">
+          <Navbar.Collapse id="basic-navbar-nav">
             <StyledNav onClick={() => setExpanded(false)}>
               <StyledLink to="/">Home</StyledLink>
               <StyledLink to="/tasks">Tasks</StyledLink>
             </StyledNav>
+            <SearchForm onSubmit={handleSearch}>
+              <SearchInput
+                type="text"
+                placeholder="Search employees..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <SearchButton type="submit">Search</SearchButton>
+            </SearchForm>
           </Navbar.Collapse>
         </Container>
       </StyledNavbar>
@@ -35,8 +51,8 @@ const StyledNavbar = styled(Navbar)`
 
 const StyledBrand = styled(Navbar.Brand)`
   color: #ffffff;
-  text-decoration: none; /* Ensure no underline */
-  font-size: 24px; /* Adjust font size as needed */
+  text-decoration: none;
+  font-size: 24px;
   font-weight: bold;
   transition: color 0.3s ease;
 
@@ -50,12 +66,12 @@ const StyledNav = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: row;
-  gap: 20px; /* Adjust spacing between links */
+  gap: 20px;
 `;
 
 const StyledLink = styled(Link)`
   color: #ffffff;
-  text-decoration: none; /* Ensure no underline */
+  text-decoration: none;
   padding: 10px 20px;
   font-size: 16px;
   font-weight: bold;
@@ -83,6 +99,27 @@ const StyledLink = styled(Link)`
   &:hover:after {
     transform: scaleX(1);
   }
+`;
+
+const SearchForm = styled.form`
+  display: flex;
+  margin-left: auto;
+`;
+
+const SearchInput = styled.input`
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+`;
+
+const SearchButton = styled.button`
+  padding: 0.5em;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 `;
 
 export default NavBar;
